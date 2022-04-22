@@ -16,8 +16,8 @@ class Select(discord.ui.Select):
 
 
 class Spielewahl(discord.ui.View):
-    def __init__(self, pool: asyncpg.Pool, user_id: int, guild_id):
-        self.pool = pool
+    def __init__(self, spieleliste, user_id: int, guild_id):
+        self.pool = spieleliste.pool
         self.user_id = user_id
         self.guild_id = guild_id
         self.select_groups = []
@@ -60,7 +60,7 @@ class Spielewahl(discord.ui.View):
         self.add_item(self.confirm_button)
         if len(self.select_groups) > 1:
             self.add_item(self.next_button)
-            self.add_item(self.previous_button)
+            self.add_item(self.previous_button)  # TODO: define buttons
 
     async def confirm(self, interaction: discord.Interaction):
         games = []
@@ -84,6 +84,14 @@ class Spielewahl(discord.ui.View):
                                    ''',
                                    games
                                    )
-        await interaction.response.send_message(content='Spiele aktualisiert :white_check_mark:',
-                                                view=None, ephemeral=True)
-
+            role_ids = await conn.fetch('''
+                                        SELECT role_id FROM games
+                                        WHERE EXISTS(
+                                                SELECT * FROM game_players
+                                                WHERE game_id = id and member_id = $1
+                                                )
+                                            AND role_id IS NOT NULL
+                                        ''',
+                                        self.user_id)
+        await interaction.user.add_roles(*[discord.Object(record[0]) for record in role_ids])
+        self.stop()

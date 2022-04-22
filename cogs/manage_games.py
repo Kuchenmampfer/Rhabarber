@@ -24,9 +24,31 @@ class ManageGames(commands.Cog):
                                role.id if role is not None else None,
                                channel.id if channel is not None else None
                                )
-            # TODO: automatically link members according to role
-            # TODO: update message
+            if role is not None:
+                await conn.executemany('''
+                                       INSERT INTO game_players(game_id, member_id)
+                                       VALUES((SELECT id FROM games WHERE name = $1 AND guild_id = $3), $2)
+                                       ON CONFLICT DO NOTHING
+                                       ''',
+                                       [(name, member.id, ctx.guild_id) for member in role.members]
+                                       )
+        await self.bot.update_guild_list_message(ctx.guild_id)
         await ctx.respond(f'Spiel {name} hinzugefügt :white_check_mark:', ephemeral=True)
+
+    @commands.slash_command(name='remove_game', guild_ids=[805155951324692571])
+    async def remove_game(self, ctx: discord.ApplicationContext,
+                          name: Option(str, description='Welches Spiel willst du löschen?'),
+                          ):
+        await ctx.defer()
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute('''
+                               DELETE FROM games
+                               WHERE name = $1 AND guild_id = $2
+                               ''',
+                               name, ctx.guild_id,
+                               )
+        await self.bot.update_guild_list_message(ctx.guild_id)
+        await ctx.respond(f'Spiel {name} gelöscht :white_check_mark:', ephemeral=True)
 
 
 def setup(bot):

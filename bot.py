@@ -37,12 +37,24 @@ class Bot(commands.Bot, ABC):
     async def get_pool(self):
         self.pool = await asyncpg.create_pool(self.postgres_dsn_str)
 
+    async def update_guild_list_message(self, guild_id: int):
+        message = None
+        spieleliste = Spieleliste(self)
+        await spieleliste.get_embeds(guild_id)
+        with open('message_ids.txt', 'r+', encoding='utf-8') as f:
+            for line in f.readlines():
+                if f':{guild_id}' in line:
+                    [message_id, channel_id, guild_id] = [int(some_id) for some_id in line.split(':')]
+                    channel = await self.fetch_channel(channel_id)
+                    message = await channel.fetch_message(message_id)
+        await message.edit(embed=spieleliste.embeds[spieleliste.current_embed_index])
+
     async def on_ready(self):
         self.logger.warning(f"Bot is logged in as {self.user} ID: {self.user.id}")
-        with open('message_id.txt', 'r', encoding='utf-8') as f:
+        with open('message_ids.txt', 'r', encoding='utf-8') as f:
             for line in f.readlines():
-                message_id = int(line)
-                self.add_view(Spieleliste(self.pool), message_id=message_id)
+                [message_id, _, _] = [int(some_id) for some_id in line.split(':')]
+                self.add_view(Spieleliste(self), message_id=message_id)
 
     async def on_resume(self):
         self.logger.warning('Resuming connection...')
