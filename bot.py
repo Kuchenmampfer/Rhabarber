@@ -45,9 +45,12 @@ class Bot(commands.Bot, ABC):
             for line in f.readlines():
                 if f':{guild_id}' in line:
                     [message_id, channel_id, guild_id] = [int(some_id) for some_id in line.split(':')]
-                    channel = await self.fetch_channel(channel_id)
-                    message = await channel.fetch_message(message_id)
-                    await message.edit(embed=spieleliste.embeds[spieleliste.current_embed_index])
+                    try:
+                        channel = await self.fetch_channel(channel_id)
+                        message = await channel.fetch_message(message_id)
+                        await message.edit(embed=spieleliste.embeds[spieleliste.current_embed_index])
+                    except discord.NotFound:
+                        pass
 
     async def on_ready(self):
         self.logger.warning(f"Bot is logged in as {self.user} ID: {self.user.id}")
