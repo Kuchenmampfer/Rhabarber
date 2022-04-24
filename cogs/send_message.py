@@ -30,7 +30,7 @@ class SendMessage(commands.Cog):
                     old_message = await old_channel.fetch_message(message_id)
                     await old_message.delete()
                 else:
-                    new_lines.append(':'.join([message_id, channel_id, guild_id]))
+                    new_lines.append(':'.join(str(some_id) for some_id in [message_id, channel_id, guild_id]))
             new_lines.append(f'{message.id}:{ctx.channel_id}:{ctx.guild_id}')
         with open('message_ids.txt', 'w', encoding='utf-8') as f:
             f.writelines(new_lines)
