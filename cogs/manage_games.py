@@ -36,7 +36,7 @@ class ManageGames(commands.Cog):
         await self.bot.update_guild_list_message(ctx.guild_id)
         await ctx.respond(f'Spiel {name} hinzugefügt :white_check_mark:', ephemeral=True)
 
-    @commands.slash_command(name='remove_game', guild_ids=[805155951324692571])
+    @commands.slash_command(name='remove_game', guild_ids=guild_ids)
     async def remove_game(self, ctx: discord.ApplicationContext,
                           name: Option(str, description='Welches Spiel willst du löschen?'),
                           ):
