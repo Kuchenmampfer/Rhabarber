@@ -47,7 +47,7 @@ class Bot(commands.Bot, ABC):
                     [message_id, channel_id, guild_id] = [int(some_id) for some_id in line.split(':')]
                     channel = await self.fetch_channel(channel_id)
                     message = await channel.fetch_message(message_id)
-        await message.edit(embed=spieleliste.embeds[spieleliste.current_embed_index])
+                    await message.edit(embed=spieleliste.embeds[spieleliste.current_embed_index])
 
     async def on_ready(self):
         self.logger.warning(f"Bot is logged in as {self.user} ID: {self.user.id}")
