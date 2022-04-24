@@ -26,9 +26,12 @@ class SendMessage(commands.Cog):
             for line in f.readlines():
                 [message_id, channel_id, guild_id] = [int(some_id) for some_id in line.split(':')]
                 if guild_id == ctx.guild_id:
-                    old_channel = await self.bot.fetch_channel(channel_id)
-                    old_message = await old_channel.fetch_message(message_id)
-                    await old_message.delete()
+                    try:
+                        old_channel = await self.bot.fetch_channel(channel_id)
+                        old_message = await old_channel.fetch_message(message_id)
+                        await old_message.delete()
+                    except discord.NotFound:
+                        pass
                 else:
                     new_lines.append(':'.join(str(some_id) for some_id in [message_id, channel_id, guild_id]))
             new_lines.append(f'{message.id}:{ctx.channel_id}:{ctx.guild_id}')
