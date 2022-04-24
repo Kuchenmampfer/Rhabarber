@@ -20,16 +20,19 @@ class SendMessage(commands.Cog):
             spieleliste.stop()
             return
         await ctx.respond('||Rhabarberbarbarabarbarbarenbartbarbier||', ephemeral=True)
-        with open('message_ids.txt', 'r+', encoding='utf-8') as f:
+        new_lines = []
+        with open('message_ids.txt', 'r', encoding='utf-8') as f:
             for line in f.readlines():
-                if f':{ctx.guild_id}' in line:
-                    [message_id, channel_id, guild_id] = [int(some_id) for some_id in line.split(':')]
+                [message_id, channel_id, guild_id] = [int(some_id) for some_id in line.split(':')]
+                if guild_id == ctx.guild_id:
                     old_channel = await self.bot.fetch_channel(channel_id)
                     old_message = await old_channel.fetch_message(message_id)
                     await old_message.delete()
                 else:
-                    f.write(line)
-            f.write(f'{message.id}:{ctx.channel_id}:{ctx.guild_id}\n')
+                    new_lines.append(':'.join([message_id, channel_id, guild_id]))
+            new_lines.append(f'{message.id}:{ctx.channel_id}:{ctx.guild_id}')
+        with open('message_ids.txt', 'w', encoding='utf-8') as f:
+            f.writelines(new_lines)
 
 
 def setup(bot):

@@ -22,6 +22,12 @@ class Spielewahl(discord.ui.View):
         self.guild_id = guild_id
         self.select_groups = []
         self.current_group_index = 0
+        self.previous_button = discord.ui.Button(label='🔼', style=discord.ButtonStyle.green,
+                                                 custom_id='spieleliste:previous_button')
+        self.previous_button.callback = self.go_to_previous
+        self.next_button = discord.ui.Button(label='🔽', style=discord.ButtonStyle.green,
+                                             custom_id='spieleliste:next_button')
+        self.next_button.callback = self.go_to_next
         self.confirm_button = discord.ui.Button(label='✅', style=discord.ButtonStyle.green,
                                                 custom_id='spielewahl:confirm_button')
         self.confirm_button.callback = self.confirm
@@ -57,10 +63,26 @@ class Spielewahl(discord.ui.View):
             select.append_option(discord.SelectOption(label=record[0], value=record[2], default=record[1]))
         for menu in self.select_groups[self.current_group_index]:
             self.add_item(menu)
-        self.add_item(self.confirm_button)
         if len(self.select_groups) > 1:
             self.add_item(self.next_button)
-            self.add_item(self.previous_button)  # TODO: define buttons
+            self.add_item(self.previous_button)
+        self.add_item(self.confirm_button)
+
+    async def go_to_previous(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        self.current_group_index -= 1
+        for menu in self.select_groups[self.current_group_index]:
+            self.add_item(menu)
+        self.add_item(self.confirm_button)
+        await interaction.edit_original_message(view=self)
+
+    async def go_to_next(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        self.current_group_index += 1
+        for menu in self.select_groups[self.current_group_index]:
+            self.add_item(menu)
+        self.add_item(self.confirm_button)
+        await interaction.edit_original_message(view=self)
 
     async def confirm(self, interaction: discord.Interaction):
         games = []
