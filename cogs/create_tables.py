@@ -17,7 +17,7 @@ class CreateTables(commands.Cog):
                                name VARCHAR(64) NOT NULL,
                                guild_id BIGINT NOT NULL,
                                role_id BIGINT,
-                               channel_id BIGINT
+                               channel_id BIGINT,
                                UNIQUE(name, guild_id)
                                );
                                
