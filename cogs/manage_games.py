@@ -1,13 +1,14 @@
 import discord
 from discord.ext import commands
 from discord import Option
+from production_secrets import guild_ids
 
 
 class ManageGames(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(name='add_game', guild_ids=[805155951324692571])
+    @commands.slash_command(name='add_game', guild_ids=guild_ids)
     async def add_game(self, ctx: discord.ApplicationContext,
                        name: Option(str, description='Wie heißt das neue Spiel?'),
                        role: Option(discord.Role) = None,

@@ -2,13 +2,14 @@ import discord
 from discord.ext import commands
 
 from views.spieleliste import Spieleliste
+from production_secrets import guild_ids
 
 
 class SendMessage(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(name='send_message', guild_ids=[805155951324692571])
+    @commands.slash_command(name='send_message', guild_ids=guild_ids)
     async def send_message(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         spieleliste = Spieleliste(self.bot)

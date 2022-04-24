@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from production_secrets import guild_ids
 
 
 class CreateTables(commands.Cog):
@@ -7,7 +8,7 @@ class CreateTables(commands.Cog):
         self.bot = bot
 
     @commands.is_owner()
-    @commands.slash_command(name='create_tables', guild_ids=[805155951324692571])
+    @commands.slash_command(name='create_tables', guild_ids=guild_ids)
     async def create_tables(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         async with self.bot.pool.acquire() as conn:
