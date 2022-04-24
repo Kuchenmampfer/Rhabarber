@@ -33,7 +33,7 @@ class SendMessage(commands.Cog):
                     new_lines.append(':'.join(str(some_id) for some_id in [message_id, channel_id, guild_id]))
             new_lines.append(f'{message.id}:{ctx.channel_id}:{ctx.guild_id}')
         with open('message_ids.txt', 'w', encoding='utf-8') as f:
-            f.writelines(new_lines)
+            f.write('\n'.join(new_lines))
 
 
 def setup(bot):
